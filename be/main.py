@@ -4,11 +4,14 @@ from sqlmodel import Field, SQLModel, Session, create_engine, select
 
 app = FastAPI()
 
-class Hero(SQLModel, table=True):
+class Question(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    age: int | None = Field(default=None, index=True)
-    secret_name: str
+    text: str = Field(index=True)
+
+class Answer(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    question_id: int = Field(foreign_key="question.id")
+    text: str = Field(index=True)
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
@@ -30,27 +33,54 @@ SessionDep = Annotated[Session, Depends(get_session)]
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-@app.post("/heroes/")
-def create_hero(hero: Hero, session: SessionDep) -> Hero:
-    session.add(hero)
+
+@app.post("/question/")
+def create_question(question: Question, session: SessionDep) -> Question:
+    session.add(question)
     session.commit()
-    session.refresh(hero)
-    return hero
+    session.refresh(question)
+    return question
 
 
-@app.get("/heroes/")
-def read_heroes(
+@app.get("/question/")
+def read_questions(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
-) -> list[Hero]:
-    heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
-    return [*heroes]
+) -> list[Question]:
+    question = session.exec(select(Question).offset(offset).limit(limit)).all()
+    return [*question]
 
 
-@app.get("/heroes/{hero_id}")
-def read_hero(hero_id: int, session: SessionDep) -> Hero:
-    hero = session.get(Hero, hero_id)
-    if not hero:
-        raise HTTPException(status_code=404, detail="Hero not found")
-    return hero
+@app.get("/question/{question_id}")
+def read_question(question_id: int, session: SessionDep) -> Question:
+    question = session.get(Question, question_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="question not found")
+    return question
+
+
+@app.post("/answer/")
+def create_answer(answer: Answer, session: SessionDep) -> Answer:
+    session.add(answer)
+    session.commit()
+    session.refresh(answer)
+    return answer
+
+
+@app.get("/answer/")
+def read_answers(
+    session: SessionDep,
+    offset: int = 0,
+    limit: Annotated[int, Query(le=100)] = 100,
+) -> list[Answer]:
+    answer = session.exec(select(Answer).offset(offset).limit(limit)).all()
+    return [*answer]
+
+
+@app.get("/answer/{answer_id}")
+def read_answer(answer_id: int, session: SessionDep) -> Answer:
+    answer = session.get(Answer, answer_id)
+    if not answer:
+        raise HTTPException(status_code=404, detail="answer not found")
+    return answer
