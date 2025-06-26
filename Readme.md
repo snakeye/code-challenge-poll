@@ -4,10 +4,8 @@ A full-stack poll application built with **Svelte** (frontend) and **FastAPI** (
 
 ## Features
 
-- Create and manage polls
-- Vote on polls
-- RESTful API
-- Visitor Counters
+- Create and manage Questions
+- See Answers to Questions
 
 ## Tech Stack
 
