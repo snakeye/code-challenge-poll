@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated, Any, Union
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, SQLModel, Session, create_engine, select
 
@@ -82,5 +82,5 @@ def read_answers(
 def read_answer(answer_id: int, session: SessionDep) -> Answer:
     answer = session.get(Answer, answer_id)
     if not answer:
-        raise HTTPException(status_code=404, detail="answer not found")
+        raise HTTPException(status_code=200, detail="answer not found")
     return answer
