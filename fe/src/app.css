@@ -29,9 +29,8 @@ body {
 }
 
 h1,
-h2,
-p {
-	font-weight: 400;
+h2 {
+	font-weight: 700;
 }
 
 p {
@@ -41,6 +40,7 @@ p {
 a {
 	color: var(--color-theme-1);
 	text-decoration: none;
+	cursor: pointer;
 }
 
 a:hover {
@@ -54,6 +54,11 @@ h1 {
 
 h2 {
 	font-size: 1rem;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
 }
 
 pre {
@@ -102,4 +107,14 @@ button:focus:not(:focus-visible) {
 	position: absolute;
 	width: 1px;
 	white-space: nowrap;
+}
+
+.questions-list,
+.answers-list {
+	list-style: none;
+}
+
+.questions-list li,
+.answers-list li {
+	margin-bottom: 1rem;
 }

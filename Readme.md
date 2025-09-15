@@ -18,3 +18,7 @@ A full-stack poll application built with **Svelte** (frontend) and **FastAPI** (
 See:
  - **Frontend:** [Readme](./fe/README.md)
  - **Backend:** [Readme](./be/README.md)
+
+## Feedback & Changes
+
+[Changes](./CHANGES.md)

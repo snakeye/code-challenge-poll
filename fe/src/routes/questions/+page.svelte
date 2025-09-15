@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { API_BASE } from '$lib/config';
 	let questions: Question[] = [];
 	let loading = true;
 	let error = '';
@@ -10,7 +11,7 @@
 		event.preventDefault();
 		message = '';
 		try {
-			const response = await fetch('http://localhost:8000/question', {
+			const response = await fetch(`${API_BASE}/v1/questions`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -20,6 +21,7 @@
 			if (response.ok) {
 				message = 'Question submitted successfully!';
 				text = '';
+				fetchQuestions();
 			} else {
 				message = 'Failed to submit question.';
 			}
@@ -32,27 +34,22 @@
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch('http://localhost:8000/question');
+			const res = await fetch(`${API_BASE}/v1/questions`);
 			if (res.ok) {
-				questions = await res.json();
+				const questions_response: Questions = await res.json();
+				questions = questions_response.results;
 			} else {
 				error = 'Failed to load questions.';
 			}
 		} catch (e) {
 			error = 'Error loading questions.';
+			console.error(e);
 		} finally {
 			loading = false;
 		}
 	}
 
 	onMount(fetchQuestions);
-
-	//Refresh questions after submitting a new one
-	$: if (message === 'Question submitted successfully!') {
-		fetchQuestions();
-	}
-
-
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
@@ -65,17 +62,19 @@
 	<p>{message}</p>
 {/if}
 
-
 {#if loading}
-	<p>Loading questions...</p>
+	<p class="message --info">Loading questions...</p>
 {:else if error}
-	<p>{error}</p>
+	<p class="message --error">{error}</p>
 {:else}
 	<h2>All Questions</h2>
-	<ul>
+
+	<ul class="questions-list">
 		{#each questions as question}
-			<li>{question.text}</li>
-			<a href="/answers/{question.id}">Show Answers</a>
+			<li>
+				{question.text}
+				<a href="/questions/{question.id}">Show Answers</a>
+			</li>
 		{/each}
 	</ul>
 {/if}
